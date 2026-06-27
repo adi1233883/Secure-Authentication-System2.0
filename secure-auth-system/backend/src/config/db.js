@@ -2,15 +2,18 @@
 // A pool (rather than one long-lived connection) lets multiple requests
 // run concurrent queries safely and automatically reconnects dropped connections.
 
-const mysql = require('mysql2/promise');
-const env = require('./env');
-
 const pool = mysql.createPool({
   host: env.DB_HOST,
   port: env.DB_PORT,
   user: env.DB_USER,
   password: env.DB_PASSWORD,
   database: env.DB_NAME,
+
+  ssl: {
+    minVersion: 'TLSv1.2',
+    rejectUnauthorized: true
+  },
+
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
