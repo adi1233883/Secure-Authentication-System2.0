@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — Secure Authentication System</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="auth-brand-icon">&#128274;</div>
+        <div class="auth-brand-name">Secure Auth System</div>
+      </div>
+
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Protected by multi-layer authentication and monitoring.</p>
+
+      <div id="alertBox" class="alert-banner hidden"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label class="form-label" for="fullName">Full name</label>
+          <input class="form-input" type="text" id="fullName" name="fullName" placeholder="Jane Doe" required minlength="2" maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <input class="form-input" type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrapper">
+            <input class="form-input" type="password" id="password" name="password" placeholder="Create a strong password" required minlength="8" autocomplete="new-password">
+            <button type="button" class="input-toggle" id="togglePassword">Show</button>
+          </div>
+
+          <div class="strength-meter" id="strengthMeter">
+            <div class="strength-bar-track">
+              <div class="strength-bar-fill" id="strengthBarFill"></div>
+            </div>
+            <div class="strength-label-row">
+              <span class="strength-label" id="strengthLabel"></span>
+              <span class="text-sm text-muted" id="strengthScore"></span>
+            </div>
+            <div class="strength-checklist" id="strengthChecklist">
+              <span id="check-length">&#9675; At least 8 characters</span>
+              <span id="check-upper">&#9675; Uppercase letter</span>
+              <span id="check-lower">&#9675; Lowercase letter</span>
+              <span id="check-number">&#9675; Number</span>
+              <span id="check-symbol">&#9675; Symbol</span>
+              <span id="check-common">&#9675; Not a common password</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="registerBtn">Create account</button>
+      </form>
+
+      <div class="trust-note">&#128272; Your password is hashed and never stored in plain text</div>
+
+      <div class="auth-footer">
+        Already have an account? <a href="index.html">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+/* ============================================================
+   Auth Pages — Login, Register, OTP Verification, Forgot Password
+   ============================================================ */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.08), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(34,197,94,0.05), transparent 40%),
+    var(--bg);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.auth-brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.auth-brand-name {
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+}
+
+.auth-title { font-size: 1.4rem; margin-bottom: 4px; }
+.auth-subtitle { font-size: 0.88rem; margin-bottom: 26px; }
+
+.auth-footer {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* --- Password strength meter --- */
+.strength-meter {
+  margin-top: 8px;
+  display: none;
+}
+.strength-meter.visible { display: block; }
+
+.strength-bar-track {
+  width: 100%;
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.strength-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  transition: width 0.25s ease, background 0.25s ease;
+  background: var(--danger);
+}
+
+.strength-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.strength-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.strength-checklist {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.strength-checklist span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.strength-checklist span.met { color: var(--success); }
+
+/* --- OTP input boxes --- */
+.otp-boxes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.otp-box {
+  width: 46px;
+  height: 54px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  outline: none;
+}
+.otp-box:focus { border-color: var(--accent); }
+
+.otp-resend {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.otp-resend button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.otp-resend button:disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+@media (max-width: 420px) {
+  .auth-card { padding: 28px 20px; }
+  .otp-box { width: 38px; height: 48px; font-size: 1.2rem; }
+}

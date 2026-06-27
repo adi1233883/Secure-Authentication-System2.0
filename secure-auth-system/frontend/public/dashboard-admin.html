@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Secure Authentication System</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="auth-brand-icon" style="width:30px;height:30px;font-size:0.95rem;">&#128274;</div>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-link active" data-section="overview">&#128202; Overview</div>
+        <div class="sidebar-link" data-section="users">&#128101; Users</div>
+        <div class="sidebar-link" data-section="logs">&#128220; Login Logs</div>
+        <div class="sidebar-link" data-section="locked">&#128274; Locked Accounts</div>
+        <div class="sidebar-link" data-section="analytics">&#128269; Security Analytics</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm btn-block" id="logoutBtn">Log out</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="topbar">
+        <div>
+          <h1 class="topbar-title" id="sectionTitle">Overview</h1>
+          <p class="topbar-sub">Organization-wide security status.</p>
+        </div>
+        <div class="user-chip">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <span class="text-sm" id="userNameChip">Admin</span>
+        </div>
+      </div>
+
+      <div id="alertBox" class="alert-banner hidden"></div>
+
+      <!-- ===== Overview Section ===== -->
+      <section id="section-overview">
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 20px;">
+          <div class="stat-card"><div class="stat-value" id="statTotalUsers">--</div><div class="stat-label">Total Users</div></div>
+          <div class="stat-card success"><div class="stat-value" id="statActiveSessions">--</div><div class="stat-label">Active Sessions</div></div>
+          <div class="stat-card warning"><div class="stat-value" id="statFailedToday">--</div><div class="stat-label">Failed Logins Today</div></div>
+          <div class="stat-card danger"><div class="stat-value" id="statLockedAccounts">--</div><div class="stat-label">Locked Accounts</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Login Trends (Last 7 Days)</div>
+          <canvas id="trendsChart" height="90"></canvas>
+        </div>
+      </section>
+
+      <!-- ===== Users Section ===== -->
+      <section id="section-users" class="hidden">
+        <div class="card">
+          <div class="card-title">All Users</div>
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Score</th><th>Actions</th></tr></thead>
+            <tbody id="usersTableBody"><tr><td colspan="6" class="text-sm text-muted">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== Login Logs Section ===== -->
+      <section id="section-logs" class="hidden">
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 14px;">
+            <div class="card-title" style="margin-bottom:0;">Login Logs</div>
+            <select class="form-input" id="logStatusFilter" style="width: auto; padding: 6px 10px;">
+              <option value="">All statuses</option>
+              <option value="success">Success</option>
+              <option value="failed_password">Failed (password)</option>
+              <option value="failed_locked">Failed (locked)</option>
+              <option value="failed_no_user">Failed (no user)</option>
+            </select>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Time</th><th>Email</th><th>IP</th><th>Status</th></tr></thead>
+            <tbody id="logsTableBody"><tr><td colspan="4" class="text-sm text-muted">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== Locked Accounts Section ===== -->
+      <section id="section-locked" class="hidden">
+        <div class="card">
+          <div class="card-title">Locked Accounts</div>
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Failed Attempts</th><th>Actions</th></tr></thead>
+            <tbody id="lockedTableBody"><tr><td colspan="4" class="text-sm text-muted">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== Security Analytics Section ===== -->
+      <section id="section-analytics" class="hidden">
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="flex justify-between items-center">
+            <div class="card-title" style="margin-bottom:0;">AI Log Analyzer</div>
+            <button class="btn btn-primary btn-sm" id="runAnalysisBtn">Re-analyze logs</button>
+          </div>
+          <div id="analysisSummary" class="mt-16 text-sm" style="white-space: pre-wrap;">
+            <p class="text-muted">No analysis has been run yet. Click "Re-analyze logs" to scan recent activity.</p>
+          </div>
+        </div>
+
+        <div class="grid-cards">
+          <div class="card">
+            <div class="card-title">Brute-Force Suspect IPs</div>
+            <div id="bruteForceList"><p class="text-sm text-muted">Run an analysis to populate this.</p></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Credential Stuffing Suspects</div>
+            <div id="credStuffingList"><p class="text-sm text-muted">Run an analysis to populate this.</p></div>
+          </div>
+        </div>
+
+        <div class="card mt-16">
+          <div class="flex justify-between items-center">
+            <div class="card-title" style="margin-bottom:0;">Reports</div>
+            <button class="btn btn-secondary btn-sm" id="downloadFullReportBtn">Download full org report (PDF)</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/chatbot-widget.js"></script>
+  <script src="assets/js/dashboard-admin.js"></script>
+</body>
+</html>

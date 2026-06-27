@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Secure Authentication System</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <div class="main-content" style="max-width: 1100px; margin: 0 auto; width: 100%;">
+
+      <div class="topbar">
+        <div>
+          <h1 class="topbar-title" id="greeting">Welcome back</h1>
+          <p class="topbar-sub">Here's your account security overview.</p>
+        </div>
+        <div class="flex items-center gap-12">
+          <div class="user-chip">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span class="text-sm" id="userNameChip">User</span>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="logoutBtn">Log out</button>
+        </div>
+      </div>
+
+      <div id="alertBox" class="alert-banner hidden"></div>
+
+      <div class="grid-cards" style="margin-bottom: 20px;">
+
+        <!-- Account Info + Security Score -->
+        <div class="card">
+          <div class="card-title">Account Information</div>
+          <div class="score-ring-wrap">
+            <div class="score-ring">
+              <svg viewBox="0 0 100 100" width="88" height="88">
+                <circle class="track" cx="50" cy="50" r="42"></circle>
+                <circle class="fill" id="scoreRingFill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"></circle>
+              </svg>
+            </div>
+            <div>
+              <div class="score-ring-text" id="scoreText">--</div>
+              <div class="text-sm text-muted" id="scoreLabel">Password score</div>
+            </div>
+          </div>
+          <div class="mt-16" style="font-size: 0.85rem;">
+            <div class="flex justify-between mt-8"><span class="text-muted">Name</span><span id="infoName">—</span></div>
+            <div class="flex justify-between mt-8"><span class="text-muted">Email</span><span id="infoEmail">—</span></div>
+            <div class="flex justify-between mt-8"><span class="text-muted">Member since</span><span id="infoSince">—</span></div>
+            <div class="flex justify-between mt-8"><span class="text-muted">Last login</span><span id="infoLastLogin">—</span></div>
+          </div>
+          <a href="#" class="btn btn-secondary btn-sm mt-16" id="downloadReportBtn" style="width: 100%;">Download security report (PDF)</a>
+        </div>
+
+        <!-- Login History -->
+        <div class="card">
+          <div class="card-title">Recent Login History</div>
+          <table class="data-table" id="loginHistoryTable">
+            <thead>
+              <tr><th>Time</th><th>IP</th><th>Status</th></tr>
+            </thead>
+            <tbody id="loginHistoryBody">
+              <tr><td colspan="3" class="text-muted text-sm">Loading...</td></tr>
+            </tbody>
+          </table>
+          <a href="#" class="btn btn-secondary btn-sm mt-16" id="exportCsvBtn" style="width: 100%;">Export full history (CSV)</a>
+        </div>
+
+        <!-- Security Alerts -->
+        <div class="card">
+          <div class="card-title">Security Alerts</div>
+          <div id="alertsList">
+            <p class="text-sm text-muted">Loading...</p>
+          </div>
+        </div>
+
+        <!-- AI Recommendations -->
+        <div class="card">
+          <div class="card-title">AI Security Recommendations</div>
+          <div id="recommendationsList">
+            <p class="text-sm text-muted">Loading...</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Account settings -->
+      <div class="grid-cards">
+        <div class="card">
+          <div class="card-title">Update Profile</div>
+          <form id="profileForm">
+            <div class="form-group">
+              <label class="form-label" for="profileFullName">Full name</label>
+              <input class="form-input" type="text" id="profileFullName" required minlength="2" maxlength="100">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profileEmail">Email</label>
+              <input class="form-input" type="email" id="profileEmail" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" id="profileBtn">Save changes</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Change Password</div>
+          <form id="passwordForm">
+            <div class="form-group">
+              <label class="form-label" for="currentPassword">Current password</label>
+              <input class="form-input" type="password" id="currentPassword" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="newPassword">New password</label>
+              <input class="form-input" type="password" id="newPassword" required minlength="8">
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" id="passwordBtn">Update password</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/chatbot-widget.js"></script>
+  <script src="assets/js/dashboard-user.js"></script>
+</body>
+</html>
