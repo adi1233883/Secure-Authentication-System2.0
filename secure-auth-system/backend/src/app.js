@@ -19,7 +19,31 @@ const app = express();
 
 // --- Core security middleware (applied globally, before routes) ---
 app.use(securityHeaders);
-app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
+const allowedOrigins = [
+  env.FRONTEND_URL,
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (Postman, curl)
+      if (!origin) return callback(null, true);
+
+      // Allow your configured frontend
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Allow ALL Vercel preview deployments
+      if (origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '10kb' })); // small limit — auth payloads are tiny, blocks oversized body attacks
 app.use(globalLimiter);
 
