@@ -12,7 +12,7 @@
 const API_BASE = (() => {
   // Same-origin by default; override by editing this if your backend runs
   // on a different host/port than the page is served from.
-  return window.API_BASE_URL || 'http://localhost:3000/api';
+  return window.API_BASE_URL = "https://secure-authentication-system2-0.onrender.com";
 })();
 
 const TOKEN_KEY = 'sas_token';

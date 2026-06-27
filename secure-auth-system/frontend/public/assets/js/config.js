@@ -6,4 +6,4 @@
 //
 // This must be loaded BEFORE api.js in every HTML page (already wired up).
 
-window.API_BASE_URL = 'http://localhost:3000/api';
+window.API_BASE_URL = "https://secure-authentication-system2-0.onrender.com";
