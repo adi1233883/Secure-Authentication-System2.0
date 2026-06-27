@@ -7,7 +7,7 @@ const logger = require('./src/utils/logger');
 
 async function start() {
   await testConnection();
-
+app.set("trust proxy", 1);
   app.listen(env.PORT, () => {
     logger.info(`Secure Authentication System API listening on port ${env.PORT} (${env.NODE_ENV})`);
     logger.info(`Health check: http://localhost:${env.PORT}/api/health`);
