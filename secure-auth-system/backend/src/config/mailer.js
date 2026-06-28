@@ -1,88 +1,45 @@
-// backend/src/config/mailer.js
-
-const nodemailer = require("nodemailer");
+const brevo = require("@getbrevo/brevo");
 const env = require("./env");
 
-console.log("====================================");
-console.log("SMTP USER:", env.SMTP_USER);
-console.log("SMTP HOST:", env.SMTP_HOST);
-console.log("SMTP PORT:", env.SMTP_PORT);
-console.log("EMAIL CONFIGURED:", env.isEmailConfigured);
-console.log("====================================");
+const apiInstance = new brevo.TransactionalEmailsApi();
 
-let transporter = null;
-
-if (env.isEmailConfigured) {
-  transporter = nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port: Number(env.SMTP_PORT),
-    secure: env.SMTP_SECURE,
-    auth: {
-      user: env.SMTP_USER,
-      pass: env.SMTP_PASSWORD,
-    },
-  });
-
-  transporter.verify()
-    .then(() => {
-      console.log("====================================");
-      console.log("BREVO SMTP SERVER READY");
-      console.log("SMTP Connection Successful");
-      console.log("====================================");
-    })
-    .catch((err) => {
-      console.error("====================================");
-      console.error("SMTP CONNECTION FAILED");
-      console.error(err);
-      console.error("====================================");
-    });
-} else {
-  console.warn(`
-====================================
-SMTP NOT CONFIGURED
-Emails will NOT be sent.
-====================================
-`);
-}
+apiInstance.setApiKey(
+  brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
 async function sendEmail({ to, subject, text, html }) {
-  if (!transporter) {
-    console.error("Transporter not initialized.");
-    return {
-      sent: false,
-      error: "SMTP not configured",
-    };
-  }
-
   try {
-    console.log("====================================");
-    console.log("SENDING EMAIL...");
-    console.log("TO:", to);
-    console.log("SUBJECT:", subject);
-    console.log("====================================");
+    const email = new brevo.SendSmtpEmail();
 
-    const info = await transporter.sendMail({
-      from: `"${env.SMTP_FROM_NAME}" <${env.SMTP_FROM_EMAIL}>`,
-      to,
-      subject,
-      text,
-      html,
-    });
+    email.sender = {
+      name: env.SMTP_FROM_NAME,
+      email: env.SMTP_FROM_EMAIL,
+    };
 
-    console.log("====================================");
-    console.log("EMAIL SENT SUCCESSFULLY");
-    console.log(info);
-    console.log("====================================");
+    email.to = [
+      {
+        email: to,
+      },
+    ];
+
+    email.subject = subject;
+    email.htmlContent = html;
+    email.textContent = text;
+
+    const result = await apiInstance.sendTransacEmail(email);
+
+    console.log("EMAIL SENT");
+    console.log(result);
 
     return {
       sent: true,
-      messageId: info.messageId,
     };
   } catch (err) {
-    console.error("====================================");
-    console.error("EMAIL SEND FAILED");
-    console.error(err);
-    console.error("====================================");
+    console.error("EMAIL ERROR");
+    console.error(
+      err.response?.body || err.response?.text || err.message || err
+    );
 
     throw err;
   }
