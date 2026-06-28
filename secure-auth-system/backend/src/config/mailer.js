@@ -1,45 +1,46 @@
-const brevo = require("@getbrevo/brevo");
+=const SibApiV3Sdk = require("@getbrevo/brevo");
 const env = require("./env");
 
-const apiInstance = new brevo.TransactionalEmailsApi();
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 apiInstance.setApiKey(
-  brevo.TransactionalEmailsApiApiKeys.apiKey,
+  SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
   process.env.BREVO_API_KEY
 );
 
 async function sendEmail({ to, subject, text, html }) {
-  try {
-    const email = new brevo.SendSmtpEmail();
-
-    email.sender = {
+  const email = {
+    sender: {
       name: env.SMTP_FROM_NAME,
       email: env.SMTP_FROM_EMAIL,
-    };
-
-    email.to = [
+    },
+    to: [
       {
         email: to,
       },
-    ];
+    ],
+    subject,
+    textContent: text,
+    htmlContent: html,
+  };
 
-    email.subject = subject;
-    email.htmlContent = html;
-    email.textContent = text;
-
+  try {
     const result = await apiInstance.sendTransacEmail(email);
 
-    console.log("EMAIL SENT");
+    console.log("====================================");
+    console.log("EMAIL SENT SUCCESSFULLY");
     console.log(result);
+    console.log("====================================");
 
     return {
       sent: true,
+      messageId: result.messageId || null,
     };
   } catch (err) {
-    console.error("EMAIL ERROR");
-    console.error(
-      err.response?.body || err.response?.text || err.message || err
-    );
+    console.error("====================================");
+    console.error("EMAIL SEND FAILED");
+    console.error(err.response?.body || err);
+    console.error("====================================");
 
     throw err;
   }
