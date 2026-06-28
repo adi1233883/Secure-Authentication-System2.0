@@ -4,6 +4,10 @@ const nodemailer = require("nodemailer");
 const env = require("./env");
 
 let transporter = null;
+console.log("SMTP USER:", env.SMTP_USER);
+console.log("SMTP PASSWORD EXISTS:", !!env.SMTP_PASSWORD);
+console.log("SMTP HOST:", env.SMTP_HOST);
+console.log("EMAIL CONFIGURED:", env.isEmailConfigured);
 
 // Create transporter only if SMTP credentials exist
 if (env.isEmailConfigured) {
