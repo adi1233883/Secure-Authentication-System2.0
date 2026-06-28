@@ -34,12 +34,12 @@ async function issueOtp(userId, purpose) {
     login_2fa: `Hi ${user.full_name}, your login verification code is:`,
   };
 
-  await sendEmail({
-    to: user.email,
-    subject: subjectMap[purpose] || 'Your verification code',
-    text: `${messageMap[purpose]}\n\n${plainOtp}\n\nThis code expires in ${env.OTP_EXPIRY_MINUTES} minutes. If you didn't request this, you can safely ignore this email.`,
-    html: `<p>${messageMap[purpose]}</p><h2 style="letter-spacing:4px;">${plainOtp}</h2><p>This code expires in ${env.OTP_EXPIRY_MINUTES} minutes. If you didn't request this, you can safely ignore this email.</p>`,
-  });
+  //await sendEmail({
+    //to: user.email,
+    //subject: subjectMap[purpose] || 'Your verification code',
+    //text: `${messageMap[purpose]}\n\n${plainOtp}\n\nThis code expires in ${env.OTP_EXPIRY_MINUTES} minutes. If you didn't request this, you can safely ignore this email.`,
+    //html: `<p>${messageMap[purpose]}</p><h2 style="letter-spacing:4px;">${plainOtp}</h2><p>This code expires in ${env.OTP_EXPIRY_MINUTES} minutes. If you didn't request this, you can safely ignore this email.</p>`,
+  //});
 
   return { issued: true };
 }
