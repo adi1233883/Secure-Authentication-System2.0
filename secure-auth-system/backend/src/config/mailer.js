@@ -4,23 +4,29 @@ const nodemailer = require("nodemailer");
 const env = require("./env");
 
 let transporter = null;
+
+console.log("====================================");
 console.log("SMTP USER:", env.SMTP_USER);
 console.log("SMTP PASSWORD EXISTS:", !!env.SMTP_PASSWORD);
 console.log("SMTP HOST:", env.SMTP_HOST);
+console.log("SMTP PORT:", env.SMTP_PORT);
+console.log("SMTP SECURE:", env.SMTP_SECURE);
 console.log("EMAIL CONFIGURED:", env.isEmailConfigured);
+console.log("====================================");
 
 // Create transporter only if SMTP credentials exist
 if (env.isEmailConfigured) {
   transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: env.SMTP_SECURE,
     auth: {
       user: env.SMTP_USER,
       pass: env.SMTP_PASSWORD,
     },
   });
 
-  // Verify SMTP connection
-  transporter.verify((error, success) => {
+  transporter.verify((error) => {
     if (error) {
       console.error("====================================");
       console.error("SMTP CONNECTION FAILED");
@@ -29,7 +35,7 @@ if (env.isEmailConfigured) {
     } else {
       console.log("====================================");
       console.log("SMTP SERVER READY");
-      console.log("Gmail connection successful.");
+      console.log("Brevo SMTP connection successful.");
       console.log("====================================");
     }
   });
@@ -38,34 +44,13 @@ if (env.isEmailConfigured) {
 ====================================
 SMTP NOT CONFIGURED
 Emails will NOT be sent.
-OTP codes will be printed in Render Logs.
 ====================================
 `);
 }
 
-/**
- * Send Email
- */
-
 async function sendEmail({ to, subject, html, text }) {
   if (!transporter) {
-    console.log(`
-========== EMAIL (DEV MODE) ==========
-To: ${to}
-
-Subject:
-${subject}
-
-Body:
-${text || html}
-
-======================================
-`);
-
-    return {
-      sent: false,
-      devMode: true,
-    };
+    throw new Error("SMTP transporter is not configured.");
   }
 
   try {
@@ -81,6 +66,7 @@ ${text || html}
     console.log("EMAIL SENT SUCCESSFULLY");
     console.log("Message ID:", info.messageId);
     console.log("Accepted:", info.accepted);
+    console.log("Rejected:", info.rejected);
     console.log("====================================");
 
     return {
@@ -93,23 +79,7 @@ ${text || html}
     console.error(err);
     console.error("====================================");
 
-    console.log(`
-========== EMAIL CONTENT ==========
-To: ${to}
-
-Subject:
-${subject}
-
-Body:
-${text || html}
-
-==================================
-`);
-
-    return {
-      sent: false,
-      error: err.message,
-    };
+    throw err;
   }
 }
 
