@@ -3,22 +3,19 @@
 const nodemailer = require("nodemailer");
 const env = require("./env");
 
-let transporter = null;
-
 console.log("====================================");
 console.log("SMTP USER:", env.SMTP_USER);
-console.log("SMTP PASSWORD EXISTS:", !!env.SMTP_PASSWORD);
 console.log("SMTP HOST:", env.SMTP_HOST);
 console.log("SMTP PORT:", env.SMTP_PORT);
-console.log("SMTP SECURE:", env.SMTP_SECURE);
 console.log("EMAIL CONFIGURED:", env.isEmailConfigured);
 console.log("====================================");
 
-// Create transporter only if SMTP credentials exist
+let transporter = null;
+
 if (env.isEmailConfigured) {
   transporter = nodemailer.createTransport({
     host: env.SMTP_HOST,
-    port: env.SMTP_PORT,
+    port: Number(env.SMTP_PORT),
     secure: env.SMTP_SECURE,
     auth: {
       user: env.SMTP_USER,
@@ -26,19 +23,19 @@ if (env.isEmailConfigured) {
     },
   });
 
-  transporter.verify((error) => {
-    if (error) {
+  transporter.verify()
+    .then(() => {
+      console.log("====================================");
+      console.log("BREVO SMTP SERVER READY");
+      console.log("SMTP Connection Successful");
+      console.log("====================================");
+    })
+    .catch((err) => {
       console.error("====================================");
       console.error("SMTP CONNECTION FAILED");
-      console.error(error);
+      console.error(err);
       console.error("====================================");
-    } else {
-      console.log("====================================");
-      console.log("SMTP SERVER READY");
-      console.log("Brevo SMTP connection successful.");
-      console.log("====================================");
-    }
-  });
+    });
 } else {
   console.warn(`
 ====================================
@@ -48,12 +45,22 @@ Emails will NOT be sent.
 `);
 }
 
-async function sendEmail({ to, subject, html, text }) {
+async function sendEmail({ to, subject, text, html }) {
   if (!transporter) {
-    throw new Error("SMTP transporter is not configured.");
+    console.error("Transporter not initialized.");
+    return {
+      sent: false,
+      error: "SMTP not configured",
+    };
   }
 
   try {
+    console.log("====================================");
+    console.log("SENDING EMAIL...");
+    console.log("TO:", to);
+    console.log("SUBJECT:", subject);
+    console.log("====================================");
+
     const info = await transporter.sendMail({
       from: `"${env.SMTP_FROM_NAME}" <${env.SMTP_FROM_EMAIL}>`,
       to,
@@ -64,9 +71,7 @@ async function sendEmail({ to, subject, html, text }) {
 
     console.log("====================================");
     console.log("EMAIL SENT SUCCESSFULLY");
-    console.log("Message ID:", info.messageId);
-    console.log("Accepted:", info.accepted);
-    console.log("Rejected:", info.rejected);
+    console.log(info);
     console.log("====================================");
 
     return {
