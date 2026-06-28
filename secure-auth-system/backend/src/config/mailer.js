@@ -1,4 +1,4 @@
-=const SibApiV3Sdk = require("@getbrevo/brevo");
+const SibApiV3Sdk = require("@getbrevo/brevo");
 const env = require("./env");
 
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
