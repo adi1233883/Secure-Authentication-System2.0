@@ -1,47 +1,49 @@
-const SibApiV3Sdk = require("@getbrevo/brevo");
+const nodemailer = require("nodemailer");
 const env = require("./env");
 
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+const transporter = nodemailer.createTransport({
+  host: env.SMTP_HOST,
+  port: Number(env.SMTP_PORT),
+  secure: env.SMTP_SECURE,
+  auth: {
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASSWORD,
+  },
+});
 
-apiInstance.setApiKey(
-  SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
+transporter.verify((err) => {
+  if (err) {
+    console.error("❌ Gmail SMTP Connection Failed");
+    console.error(err);
+  } else {
+    console.log("✅ Gmail SMTP Connected Successfully");
+  }
+});
 
 async function sendEmail({ to, subject, text, html }) {
-  const email = {
-    sender: {
-      name: env.SMTP_FROM_NAME,
-      email: env.SMTP_FROM_EMAIL,
-    },
-    to: [
-      {
-        email: to,
-      },
-    ],
-    subject,
-    textContent: text,
-    htmlContent: html,
-  };
-
   try {
-    const result = await apiInstance.sendTransacEmail(email);
+    const info = await transporter.sendMail({
+      from: `"${env.SMTP_FROM_NAME}" <${env.SMTP_FROM_EMAIL}>`,
+      to,
+      subject,
+      text,
+      html,
+    });
 
     console.log("====================================");
     console.log("EMAIL SENT SUCCESSFULLY");
-    console.log(result);
+    console.log("Message ID:", info.messageId);
     console.log("====================================");
 
     return {
       sent: true,
-      messageId: result.messageId || null,
+      messageId: info.messageId,
     };
   } catch (err) {
     console.error("====================================");
     console.error("EMAIL SEND FAILED");
-    console.error(err.response?.body || err);
+    console.error(err);
     console.error("====================================");
-
     throw err;
   }
 }
