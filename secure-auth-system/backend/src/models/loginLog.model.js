@@ -12,25 +12,35 @@ async function record({ userId, emailAttempted, ipAddress, userAgent, status, is
   );
   return result.insertId;
 }
-
 async function findByUser(userId, { limit = 20, offset = 0 } = {}) {
   const [rows] = await pool.execute(
-    `SELECT * FROM login_logs WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-    [userId, limit, offset]
+    `SELECT *
+     FROM login_logs
+     WHERE user_id = ?
+     ORDER BY created_at DESC
+     LIMIT ?, ?`,
+    [
+      Number(offset),
+      Number(limit)
+    ]
   );
+
   return rows;
 }
 
 // Has this user successfully logged in from this IP + user agent combo before
 // (within the lookback window)? Used for new-device/new-location detection.
-async function hasPriorSuccessfulLogin(userId, ipAddress, userAgent, lookbackDays = 30) {
+async function findByUser(userId) {
   const [rows] = await pool.execute(
-    `SELECT COUNT(*) AS count FROM login_logs
-     WHERE user_id = ? AND status = 'success' AND ip_address = ? AND user_agent = ?
-       AND created_at > NOW() - INTERVAL ? DAY`,
-    [userId, ipAddress, userAgent || '', lookbackDays]
+    `SELECT *
+     FROM login_logs
+     WHERE user_id = ?
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [userId]
   );
-  return rows[0].count > 0;
+
+  return rows;
 }
 
 async function findAll({ limit = 50, offset = 0, status = null, ip = null } = {}) {
