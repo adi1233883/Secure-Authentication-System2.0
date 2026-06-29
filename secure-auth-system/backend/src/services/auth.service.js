@@ -55,7 +55,10 @@ async function resendOtp(email, purpose) {
 }
 
 async function login({ email, password, ip, userAgent }) {
-  const user = await userModel.findByEmail(email);
+console.log("STEP 1 - findByEmail");
+const user = await userModel.findByEmail(email);
+console.log("DONE STEP 1");
+  
 
   if (!user) {
     // Generic logging + generic error — never reveal whether the email exists.
@@ -63,7 +66,9 @@ async function login({ email, password, ip, userAgent }) {
     throw httpError('Invalid email or password', 401);
   }
 
-  const lockStatus = await securityService.checkLockStatus(user);
+  console.log("STEP 2 - checkLockStatus");
+const lockStatus = await securityService.checkLockStatus(user);
+console.log("DONE STEP 2");
   if (lockStatus.locked) {
     await loginLoggerService.logAttempt({ userId: user.id, email, ip, userAgent, status: 'failed_locked' });
     throw httpError(
@@ -76,7 +81,9 @@ async function login({ email, password, ip, userAgent }) {
     throw httpError('Please verify your email before logging in.', 403);
   }
 
-  const passwordMatches = await hashUtil.compare(password, user.password_hash);
+  console.log("STEP 3 - bcrypt");
+const passwordMatches = await hashUtil.compare(password, user.password_hash);
+console.log("DONE STEP 3");
   if (!passwordMatches) {
     const failResult = await securityService.handleFailedLogin(user);
     await loginLoggerService.logAttempt({ userId: user.id, email, ip, userAgent, status: 'failed_password' });
@@ -94,18 +101,26 @@ async function login({ email, password, ip, userAgent }) {
   }
 
   // Success path.
-  const suspiciousResult = await securityService.detectSuspiciousLogin(user, ip, userAgent);
+  console.log("STEP 4 - suspicious");
+const suspiciousResult = await securityService.detectSuspiciousLogin(user, ip, userAgent);
+console.log("DONE STEP 4");
   await loginLoggerService.logAttempt({
     userId: user.id, email, ip, userAgent,
     status: 'success', isSuspicious: suspiciousResult.suspicious,
   });
-  await securityService.handleSuccessfulLogin(user);
-  await userModel.recordSuccessfulLogin(user.id, ip);
-
-  const { token, jti } = signToken(user);
+  console.log("STEP 5");
+await securityService.handleSuccessfulLogin(user);
+console.log("DONE STEP 5");
+console.log("STEP 6");
+await userModel.recordSuccessfulLogin(user.id, ip);
+console.log("DONE STEP 6");
+  console.log("STEP 7");
+const { token, jti } = signToken(user);
+console.log("DONE STEP 7");
   const expiresAt = new Date(Date.now() + env.SESSION_DURATION_MINUTES * 60 * 1000);
+  console.log("STEP 8");
   await sessionModel.create({ jti, userId: user.id, ipAddress: ip, userAgent, expiresAt });
-
+console.log("DONE STEP 8");
   return {
     token,
     user: { id: user.id, fullName: user.full_name, email: user.email, role: user.role },
