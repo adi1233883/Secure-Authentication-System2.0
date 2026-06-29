@@ -1,48 +1,34 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const env = require("./env");
-console.log("HOST:", env.SMTP_HOST);
-console.log("PORT:", env.SMTP_PORT);
-console.log("SECURE:", env.SMTP_SECURE);
-console.log("USER:", env.SMTP_USER);
 
-const transporter = nodemailer.createTransport({
-  host: env.SMTP_HOST,
-  port: Number(env.SMTP_PORT),
-  secure: env.SMTP_SECURE,
-  auth: {
-    user: env.SMTP_USER,
-    pass: env.SMTP_PASSWORD,
-  },
-});
-
-transporter.verify((err) => {
-  if (err) {
-    console.error("❌ Gmail SMTP Connection Failed");
-    console.error(err);
-  } else {
-    console.log("✅ Gmail SMTP Connected Successfully");
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendEmail({ to, subject, text, html }) {
   try {
-    const info = await transporter.sendMail({
-      from: `"${env.SMTP_FROM_NAME}" <${env.SMTP_FROM_EMAIL}>`,
-      to,
+    const { data, error } = await resend.emails.send({
+      from: "Secure Auth <onboarding@resend.dev>",
+      to: [to],
       subject,
-      text,
       html,
+      text,
     });
+
+    if (error) {
+      console.error("EMAIL SEND FAILED");
+      console.error(error);
+      throw new Error(error.message);
+    }
 
     console.log("====================================");
     console.log("EMAIL SENT SUCCESSFULLY");
-    console.log("Message ID:", info.messageId);
+    console.log(data);
     console.log("====================================");
 
     return {
       sent: true,
-      messageId: info.messageId,
+      messageId: data?.id,
     };
+
   } catch (err) {
     console.error("====================================");
     console.error("EMAIL SEND FAILED");
